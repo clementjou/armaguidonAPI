@@ -9,10 +9,10 @@ namespace armaguidonAPI.Models
     public class DashboardItem
     {
         [Key]
-        public int ItemId { get; set; }
-        public string Type { get; set; }
-        public string Config { get; set; }
+        public int itemId { get; set; }
+        public string type { get; set; }
+        public string config { get; set; }
         public int UserId { get; set; }
-        public User user { get; set; }
+        public User User { get; set; }
     }
 }

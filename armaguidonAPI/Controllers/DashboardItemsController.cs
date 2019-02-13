@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using armaguidonAPI.Models;
+using System.Threading.Tasks;
 
 namespace armaguidonAPI.Controllers
 {
@@ -19,14 +20,14 @@ namespace armaguidonAPI.Controllers
         // GET: api/DashboardItems
         public IQueryable<DashboardItem> GetDashboardItems()
         {
-            return db.DashboardItems;
+            return db.DashboardItems.Include(d => d.User);
         }
 
         // GET: api/DashboardItems/5
         [ResponseType(typeof(DashboardItem))]
-        public IHttpActionResult GetDashboardItem(int id)
+        public async Task<IHttpActionResult> GetDashboardItemAsync(int id)
         {
-            DashboardItem dashboardItem = db.DashboardItems.Find(id);
+            DashboardItem dashboardItem = await db.DashboardItems.Include(d => d.User).SingleOrDefaultAsync(d => d.itemId == id);
             if (dashboardItem == null)
             {
                 return NotFound();
@@ -44,7 +45,7 @@ namespace armaguidonAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (id != dashboardItem.ItemId)
+            if (id != dashboardItem.itemId)
             {
                 return BadRequest();
             }
@@ -82,7 +83,7 @@ namespace armaguidonAPI.Controllers
             db.DashboardItems.Add(dashboardItem);
             db.SaveChanges();
 
-            return CreatedAtRoute("DefaultApi", new { id = dashboardItem.ItemId }, dashboardItem);
+            return CreatedAtRoute("DefaultApi", new { id = dashboardItem.itemId }, dashboardItem);
         }
 
         // DELETE: api/DashboardItems/5
@@ -112,7 +113,7 @@ namespace armaguidonAPI.Controllers
 
         private bool DashboardItemExists(int id)
         {
-            return db.DashboardItems.Count(e => e.ItemId == id) > 0;
+            return db.DashboardItems.Count(e => e.itemId == id) > 0;
         }
     }
 }
